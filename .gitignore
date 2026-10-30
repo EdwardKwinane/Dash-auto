@@ -1,0 +1,28 @@
+# Secrets & environment
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output & test artifacts
+dist/
+build/
+.next/
+out/
+coverage/
+test-results/
+playwright-report/
+
+# Local logs & OS files
+*.log
+.DS_Store
+
+# OpenCode local session state (never track)
+.opencode/state/
+
+# Installation archive — the repo (this kit) is the source of truth, not the zip.
+# The file remains untouched on disk; it is merely kept out of the Git baseline.
+/sdlc-kit-production-cloud-first.zip

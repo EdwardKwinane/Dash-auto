@@ -1,0 +1,20 @@
+# TEMPLATE: runs agent evals when the agent configuration changes, and nightly.
+# Verify the install command, auth env var and `opencode run` flags for your OpenCode version/provider.
+name: Agent evals
+on:
+  pull_request:
+    paths: ['AGENTS.md', 'REVIEW.md', '.opencode/**', 'spec/constitution.md', 'spec/protected-paths.txt', 'evals/**']
+  schedule:
+    - cron: '0 2 * * *'
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - run: sudo apt-get install -y jq
+      - run: npm install -g opencode-ai
+      - name: Run evals
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}   # or your provider's key
+        run: evals/run.sh

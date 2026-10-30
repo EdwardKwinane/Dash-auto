@@ -1,0 +1,17 @@
+# Control bands. Detection is DETERMINISTIC (ops/detect.mjs); the agent is invoked only after a breach.
+# Pick metrics with a stable rolling baseline. Add one block per metric.
+metrics:
+  - name: ci_test_failure_rate
+    baseline: rolling_30d
+    rules: western_electric
+    tiers:
+      1sigma: { action: log }
+      2sigma: { action: diagnose, agent: ops, tools: "read-only" }
+      3sigma: { action: propose, routes: [pull_request, "runbook: quarantine-flaky-test"] }
+  - name: post_deploy_5xx_rate
+    baseline: rolling_30d
+    rules: western_electric
+    tiers:
+      1sigma: { action: log }
+      2sigma: { action: diagnose, agent: ops }
+      3sigma: { action: propose, routes: [pull_request, "runbook: rollback-deploy"] }

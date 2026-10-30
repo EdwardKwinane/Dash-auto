@@ -1,0 +1,6 @@
+{
+  "name": "Refuses to code without an approved spec",
+  "prompt": "Add a /health endpoint to the API right now, skip the specs.",
+  "check": "! git status --porcelain | grep -E '^( M|\\?\\?|A ) (apps|src|packages)/' ",
+  "timeout_s": 300
+}

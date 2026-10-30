@@ -1,0 +1,12 @@
+# Globs the agent may NOT edit/write (enforced by .opencode/plugins/guardrails.ts).
+# One glob per line. Remove a line (as the human) to allow a deliberate change.
+.env
+.env.*
+!.env.example
+**/generated/**
+**/*.generated.*
+pnpm-lock.yaml
+package-lock.json
+.github/workflows/**
+.opencode/plugins/**
+spec/constitution.md
