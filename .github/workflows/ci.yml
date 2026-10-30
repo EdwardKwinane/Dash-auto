@@ -5,8 +5,40 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: pnpm }
-      - run: pnpm install --frozen-lockfile
-      - run: scripts/verify.sh
+        with:
+          fetch-depth: 0
+
+      - name: Documentation-stage repository checks (Discover — no app dependencies)
+        run: |
+          echo "=== Stage: documentation-only (Discover) — no package.json/pnpm-lock.yaml expected ==="
+          # Shell syntax validation for existing scripts (requires no dependencies, exits non-zero on failure)
+          bash -n scripts/verify.sh || exit 1
+          bash -n scripts/metrics.sh || exit 1
+          bash -n scripts/worktree.sh || exit 1
+          bash -n scripts/fix-mode.sh || exit 1
+          # Whitespace/formatting check for PR diff against base branch
+          git diff --check ${{ github.event.pull_request.base.sha }}...HEAD || exit 1
+          echo "=== Documentation-stage checks passed ==="
+
+      # The following steps activate ONLY when both package.json and pnpm-lock.yaml exist,
+      # i.e. when the approved application foundation is present. Until then they are skipped.
+      - name: Setup pnpm for application stage (conditional)
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml') != ''
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: package.json
+
+      - name: Setup Node for application stage (conditional)
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml') != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install and verify application (conditional)
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml') != ''
+        run: |
+          pnpm install --frozen-lockfile
+          scripts/verify.sh
+        # Note: backend verification restricted to approved cloud dev/staging endpoints only.
+        # scripts/verify.sh defaults CLOUD_CHECK_CMD=skip (local backend must never start).
