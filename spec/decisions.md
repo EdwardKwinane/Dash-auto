@@ -42,3 +42,38 @@
   substitute infrastructure.
 - Related: `AGENTS.md`, `spec/workflow.md`, `spec/testing.md`, `spec/stack.md`, `spec/platform-readiness.md`,
   `spec/governance.md`, `scripts/verify.sh`
+
+### ADR-003: Defer cloud provider selection to an evidence-based platform audit
+- Date: 2026-10-30
+- Status: Accepted (posture); Selection: Open (decides at `/platform-audit`, human-approved)
+- Context: Dash-auto is a zero-cost-first portfolio demonstration with a global-facing privacy posture
+  (GDPR-principles baseline, adaptable e.g. POPIA). Locking a provider before evidence risks free-tier expiry,
+  regional residency gaps and rework.
+- Options: A) premature lock-in; B) evidence-based comparison then human-approved selection.
+- Decision: Option B. At `/platform-audit`, compare — (1) Vercel + Supabase; (2) Vercel + Neon + Cloudflare R2 +
+  queue/background service; (3) AWS (RDS PostgreSQL, Cognito, S3, SES + queue/worker services) — against:
+  free-tier limits/expiry, regional availability/residency, PostgreSQL compatibility, auth/RBAC, object storage +
+  image delivery, queues/background jobs/durable execution, AI/agentic readiness (future), DX/CLI/MCP/automation
+  support, deployment/observability/backups/DR, lock-in and migration cost, production scalability, current
+  pricing. All findings verified against official documentation/pricing with sources + verification dates recorded
+  in `spec/platform-readiness.md`. Auth (incl. provider-auth vs Clerk vs custom sessions) evaluated alongside the
+  backend provider. Email compared (Resend, AWS SES, other credible free-first providers) with SPF/DKIM/DMARC,
+  quotas, webhooks, domain-verification dependencies documented.
+- Consequences: Nothing is provisioned before approval; synthetic data and sandbox integrations only; no paid
+  resources; provider rows remain `[Provisional]` in `stack.md`; the three options and their criteria are the
+  mandated evidence checklist.
+
+### ADR-004: Modular payment, email and AI service seams (MVP v1 boundaries)
+- Date: 2026-10-30
+- Status: Accepted
+- Context: MVP v1 explicitly excludes real payments and defers email/AI provider selection, but the marketplace
+  domain must not later be rewritten around whichever vendors are eventually chosen.
+- Decision: (1) Payments — v1 has no PSP: clearly labelled mock checkout/reservation flows, synthetic data, no PSP
+  keys or webhooks, no real card/banking data; a simulated reservation is never presented as a confirmed
+  commercial transaction. Future PSP integration goes through a modular payment abstraction (separate spec,
+  security review, plan and approval). (2) Email — transactional email is a modular backend service (enquiry
+  confirmations, seller onboarding, listing status, admin notifications) replaceable without changing business
+  logic. (3) AI — agentic features are documented future capabilities behind reserved seams; each requires its
+  own spec → platform evidence → plan → approval before implementation.
+- Consequences: No PSP/provisioning during MVP v1; platform audit documents mock-payment boundaries and future
+  integration requirements; reviews check that domain logic never imports vendor SDKs directly.
