@@ -2,31 +2,36 @@
 
 > Filled by `/init`. The agent reads this before installing anything or running commands.
 > Pin versions deliberately. Replace the defaults below with your choices.
+> **Status: DRAFT — awaiting human approval. Items marked [Provisional] are unverified and must pass
+> `/platform-audit` (official docs, versions, quotas, auth) before anything is installed or provisioned.**
 
 ## Stack
 | Layer | Choice | Version | Notes |
 |---|---|---|---|
-| Language | TypeScript (strict) | | |
-| Frontend | React + Vite / Next.js | | |
-| Styling | Tailwind CSS + component library | | |
-| Backend | Node (Fastify/Express/Nest) / Python (FastAPI) | | |
-| Database | PostgreSQL | | |
-| ORM / migrations | Drizzle / Prisma / SQLAlchemy | | |
-| Auth | | | |
-| Validation | Zod / Pydantic | | |
-| Testing | Vitest / Jest / Pytest, Playwright (e2e) | | |
+| Language | TypeScript (strict) | | Constitution rule 5 |
+| Frontend | Next.js (App Router) [Provisional] | | Recommendation only; confirm at design/plan stage (vs React+Vite) — supports the responsive five-viewport UI + future server components. **Local Next.js development is frontend-only; it communicates with the cloud backend via an environment-configured HTTPS API URL. Local route handlers, server actions or server components must not become an unapproved local backend; any cloud-hosted frontend server-side execution requires explicit architecture approval.** |
+| Styling | Tailwind CSS + component library [Provisional] | | Component library derived from approved Figma system, not chosen until design baseline |
+| Backend | Node.js (TypeScript) runtime [Provisional] | | Host/shape (Functions/containers) decided with provider at `/platform-audit`. **`/platform-audit` must verify runtime compatibility, deployment model, background execution capabilities, operational constraints, cold-start characteristics and provider-specific limits before approval.** |
+| Database | PostgreSQL | | Provider TBD at `/platform-audit` (ADR-003): Vercel+Supabase vs Vercel+Neon+R2 vs AWS RDS |
+| ORM / migrations | Drizzle [Provisional] | | Verify at platform audit; migrations run only against approved cloud dev/staging |
+| Auth | TBD at `/platform-audit` | | RBAC for customer/seller/admin; provider evaluated with backend choice |
+| Validation | Zod [Provisional] | | Shared boundary schemas |
+| Testing | Vitest (unit/component) + Playwright (e2e) [Provisional] | | Pyramid & environments per `testing.md` |
 | Package manager | pnpm | | |
-| CI | GitHub Actions | | |
-| Hosting | | | |
+| CI | GitHub Actions | | Frontend CI uses mocks or approved non-production endpoints only; **no production credentials or production database access.** Backend deployment and migrations require separate authorization, approved workflows and explicit human sign-off — not the PR CI path. |
+| Hosting | Frontend: Vercel [Provisional] · Backend/data: TBD at `/platform-audit` | | Zero-cost-first is a target, not a guarantee; free-tier quotas, expiry dates, bandwidth/storage/email/limits, background-execution caps, commercial-use restrictions must be evaluated; likely growth costs and production-approved provider require documented cost-benefit and human approval beyond free-tier usage. |
+| AI (future seam) | OpenRouter + Vercel AI Gateway [Provisional, future-only] | | Documented future capabilities only (intelligent search, conversational discovery, listing assistance, enquiry triage, admin workflow agents); **no provider installation, API keys, provisioning or implementation as part of the MVP foundation — awaiting their own spec/plan/approval.** |
+| Email | TBD at `/platform-audit` | | Candidates: Resend, AWS SES, other free-first providers; modular service per ADR-004 |
+| Payments | **None in v1** | | Mock checkout only; PSP-free; modular payment abstraction per ADR-004 |
 
 ## Repo layout
 ```
-/apps/web        # frontend
-/apps/api        # backend
+/apps/web        # frontend (local development approved)
+/apps/api        # backend (cloud-hosted only — never run locally)
 /packages/shared # shared types, schemas
 /spec            # this folder
 ```
-<!-- Adjust to the real layout. Keep in sync. -->
+<!-- Adjusted when the backend provider/deployment shape is approved. Keep in sync. -->
 
 ## Commands (the agent runs these to verify work)
 `scripts/verify.sh` wraps lint + typecheck + test + build and is the single feedback loop. Set its defaults (or env vars `LINT_CMD`, `TYPECHECK_CMD`, `TEST_CMD`, `BUILD_CMD`) to match the table below.

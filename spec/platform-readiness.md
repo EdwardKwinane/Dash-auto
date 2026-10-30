@@ -3,6 +3,15 @@
 Status: **Required before implementation**. This register is evidence-based; never mark a platform ready from
 memory or because a CLI appears installed.
 
+## Audit queue (from ADR-003 + Discover session, 2026-10-30 — all statuses Provisional)
+`/platform-audit` evaluates and fills the register for: Figma (MCP/API access verification — file
+`12LxdrHAdf5Djzr5UhpmiZ` under EdwardKwinane), source control (GitHub `origin`, `gh` auth for EdwardKwinane),
+local workstation tooling (OpenCode v2.2.0, pnpm/node versions), cloud CI (GitHub Actions incl.
+runner↔backend permissions), backend provider options per ADR-003 comparison (Vercel+Supabase / Vercel+Neon+
+Cloudflare R2 / AWS), auth options (with backend evaluation), email providers (Resend / SES / other free-first),
+and the reserved (future-only) AI seam (OpenRouter + Vercel AI Gateway — included only for future architecture-seam assessment; no AI account configuration, API keys, model integration, provisioning or implementation is authorized during the MVP platform audit). Nothing is provisioned during the audit;
+zero-cost-first; findings require official-doc sources + verification dates.
+
 ## Required audit record (duplicate per platform)
 | Field | Evidence |
 |---|---|
@@ -33,6 +42,9 @@ memory or because a CLI appears installed.
   (and then audit it as its own platform entry).
 - Consult official docs for the exact feature being used. Blogs and videos may supplement, not replace them.
 - Check platform-specific installed skills/plugins/MCP/CLI; do not invent integrations or CLI commands.
+- **AUDIT SAFETY RULE: audit activities are read-only wherever possible. Do not create cloud resources,
+  enable paid services, deploy, change account settings, configure production integrations or modify Figma
+  designs without separate explicit human approval.**
 - Treat each readiness dimension as a **separate check** — never infer one from another:
   1. Installed.
   2. Correct version.
@@ -42,6 +54,8 @@ memory or because a CLI appears installed.
 - Authentication is a status check only. The human performs interactive login and grants permissions.
 - Use least-privilege scopes. Separate dev/staging/prod identities and secrets. No production credentials in
   the agent workspace unless explicitly justified and approved.
+- **SCOPE RULE: every readiness decision must state its intended scope (e.g. local development, cloud CI,
+  development/staging backend, production). Readiness for one scope does not imply readiness for another.**
 - Record exact limits and whether a free plan permits the intended commercial use. A free tier is not a
   production SLA. Re-check at launch.
 - A platform with unresolved critical compatibility, licensing, security or auth questions is Blocked.
