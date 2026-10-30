@@ -91,7 +91,7 @@ implemented.
   `/platform-audit` + `/design-sync` run.
 
 ## Global non-functional requirements
-- Performance: provisional API p95 list/detail < 300 ms under a defined workload; image delivery via CDN-backed object storage (targets revisited at architecture approval); page-load performance separate from API latency measurement. 
+- Performance: provisional API p95 list/detail < 300 ms under a defined workload; image delivery via CDN-backed object storage (targets revisited at architecture approval); page-load performance separate from API latency measurement.
 - Availability: portfolio/demo target; production SLA deferred to real-launch decision.
 - Privacy / compliance: GDPR-principles baseline; POPIA-adaptable; documented data flows & retention; data
   residency configurable by region; synthetic data only.
